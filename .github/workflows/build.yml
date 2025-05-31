@@ -17,8 +17,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libqt5core5a libqt5network5 libqt5gui5
-
+          sudo apt-get install -y build-essential cmake \
+            qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
+            libqt5core5a libqt5network5 libqt5gui5 \
+            libqt5widgets5 libqt5concurrent5 libqt5xml5 \
+            libqt5svg5-dev libqt5test5 \
+            zlib1g-dev openjdk-17-jdk
+            
       - name: Build
         run: |
           mkdir build
@@ -30,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: your-launcher-linux
-          path: build/application
+          path: build/launcher/MultiMC
 
   build-windows:
     runs-on: windows-latest
@@ -38,21 +43,32 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-          
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+
+      # Set up MSYS2 with MinGW and required dependencies
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
         with:
-          version: '5.15.2'
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-qt5-base
+            mingw-w64-x86_64-qt5-svg
+            mingw-w64-x86_64-qt5-tools
           
-      - name: Build
+      - name: Build with MSYS2
+        shell: msys2 {0}
         run: |
-          mkdir build
+          mkdir -p build
           cd build
-          cmake -G "MinGW Makefiles" ..
-          mingw32-make
+          cmake .. -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc)
           
       - name: Upload Windows Build
         uses: actions/upload-artifact@v4
         with:
           name: your-launcher-windows
-          path: build/application
+          path: build/launcher/MultiMC.exe
