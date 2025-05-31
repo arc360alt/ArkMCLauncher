@@ -42,25 +42,24 @@ jobs:
           name: arkmc-linux
           path: build/application
   
-45|   build-windows:
-46|     runs-on: windows-latest
-47|     steps:
-48|       - uses: actions/checkout@v3
-49|         with:
-50|           submodules: recursive
-51|
-52|       - name: Install Qt
-53|         uses: jurplel/install-qt-action@v3
-54|       
-55|       - name: Configure and Build
-56|         run: |
-57|           mkdir build
-58|           cd build
-59|           cmake -G "MinGW Makefiles" ..
-60|           mingw32-make
-61|       
-62|       - name: Upload Windows Build
-63|         uses: actions/upload-artifact@v3
-64|         with:
-65|           name: arkmc-windows
-66|           path: build/application
+    build-windows:
+     runs-on: windows-latest
+     steps:
+       - uses: actions/checkout@v3
+         with:
+           submodules: recursive
+       - name: Install Qt
+         uses: jurplel/install-qt-action@v3
+       
+       - name: Configure and Build
+         run: |
+           mkdir build
+           cd build
+           cmake -G "MinGW Makefiles" ..
+           mingw32-make
+       
+       - name: Upload Windows Build
+         uses: actions/upload-artifact@v3
+         with:
+           name: arkmc-windows
+           path: build/application
