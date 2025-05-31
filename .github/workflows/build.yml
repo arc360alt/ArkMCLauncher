@@ -30,7 +30,7 @@ jobs:
         run: ls -R build
 
       - name: Verify Build Output
-        run: |
+        run: 
           if [ ! -d build/application ]; then
             echo "Build output directory 'build/application' does not exist."
             exit 1
@@ -42,24 +42,24 @@ jobs:
           name: arkmc-linux
           path: build/application
   
-        build-windows:
-        runs-on: windows-latest
-        steps:
-        - uses: actions/checkout@v3
-          with:
-           submodules: recursive
-        - name: Install Qt
-          uses: jurplel/install-qt-action@v3
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
        
-        - name: Configure and Build
-           run: |
-           mkdir build
-           cd build
-           cmake -G "MinGW Makefiles" ..
-           mingw32-make
+      - name: Configure and Build
+        run: 
+          mkdir build
+          cd build
+          cmake -G "MinGW Makefiles" ..
+          mingw32-make
        
-        - name: Upload Windows Build
-           uses: actions/upload-artifact@v3
-           with:
-           name: arkmc-windows
-           path: build/application
+      - name: Upload Windows Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: arkmc-windows
+          path: build/application
