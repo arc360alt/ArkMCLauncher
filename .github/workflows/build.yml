@@ -27,7 +27,7 @@ jobs:
           make -j$(nproc)
           
       - name: Upload Linux Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: your-launcher-linux
           path: build/application
@@ -52,7 +52,7 @@ jobs:
           mingw32-make
           
       - name: Upload Windows Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: your-launcher-windows
           path: build/application
