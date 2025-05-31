@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-      
+          
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -25,13 +25,23 @@ jobs:
           cd build
           cmake ..
           make -j$(nproc)
-          
+
+      - name: Debug Build Output
+        run: ls -R build
+
+      - name: Verify Build Output
+        run: |
+          if [ ! -d build/application ]; then
+            echo "Build output directory 'build/application' does not exist."
+            exit 1
+          fi
+
       - name: Upload Linux Build
         uses: actions/upload-artifact@v3
         with:
           name: arkmc-linux
           path: build/application
-
+  
   build-windows:
     runs-on: windows-latest
     steps:
@@ -41,11 +51,17 @@ jobs:
           
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
-        with:
-          version: '5.15.2'
-          
-      - name: Build
+      - name: Check build output
         run: |
+          dir build
+          dir build\application || echo "build\\application does not exist"
+
+      - name: Upload Windows Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: arkmc-windows
+          path: build/application
+          
           mkdir build
           cd build
           cmake -G "MinGW Makefiles" ..
