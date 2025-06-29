@@ -42,7 +42,7 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: '5.15.2'
-          modules: 'qtbase qttools qtdeclarative'
+          modules: 'qtbase qttools'  # Remove qtdeclarative if unavailable
 
       - name: Configure CMake
         run: cmake -S . -B build -G Ninja
