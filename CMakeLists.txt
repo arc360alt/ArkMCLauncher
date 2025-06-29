@@ -3,7 +3,7 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 if(WIN32)
     # In Qt 5.1+ we have our own main() function, don't autolink to qtmain on Windows
-    cmake_policy(SET CMP0020 OLD)
+
 endif()
 
 project(ArkMCLauncher)
