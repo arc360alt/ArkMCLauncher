@@ -30,20 +30,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build qtbase5-dev qtdeclarative5-dev qttools5-dev qttools5-dev-tools libqt5svg5-dev qtbase5-private-dev zlib1g-dev cmake
-
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
         run: |
           choco install ninja
           choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-
-      - name: Install Qt (Windows)
-        if: runner.os == 'Windows'
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: '5.15.2'
-          modules: 'qtbase qttools'  # Remove qtdeclarative if unavailable
-
+          choco install qt5-default
+          RefreshEnv
       - name: Configure CMake
         run: cmake -S . -B build -G Ninja
 
