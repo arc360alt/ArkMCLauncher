@@ -37,7 +37,7 @@ jobs:
           choco install ninja
           choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
           choco install qt5-default
-          RefreshEnv
+          # RefreshEnv removed; not needed in GitHub Actions
 
       - name: Configure CMake
         run: cmake -S . -B build -G Ninja
