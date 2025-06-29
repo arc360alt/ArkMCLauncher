@@ -40,16 +40,21 @@ jobs:
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install ninja cmake qt5
-          brew link --force qt
-
-      - name: Set Qt env (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          echo "C:\Qt\5.15.2\msvc2019_64\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+          brew update
+          brew install ninja cmake qt@5
+          echo 'export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export LDFLAGS="-L/opt/homebrew/opt/qt@5/lib"' >> $GITHUB_ENV
+          echo 'export CPPFLAGS="-I/opt/homebrew/opt/qt@5/include"' >> $GITHUB_ENV
+          echo 'export PKG_CONFIG_PATH="/opt/homebrew/opt/qt@5/lib/pkgconfig"' >> $GITHUB_ENV
 
       - name: Configure CMake
-        run: cmake -S . -B build -G Ninja
+        shell: bash
+        run: |
+          # macOS: Set CMAKE_PREFIX_PATH so CMake can find Qt5
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            export CMAKE_PREFIX_PATH="/opt/homebrew/opt/qt@5"
+          fi
+          cmake -S . -B build -G Ninja
 
       - name: Build
         run: cmake --build build --config Release --parallel
