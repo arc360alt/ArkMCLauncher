@@ -49,6 +49,10 @@ jobs:
           choco install ninja -y
           choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
 
+      - name: Install ZLIB (Windows)
+        if: runner.os == 'Windows'
+        run: choco install zlib -y
+
       - name: Add CMake and Ninja to PATH (Windows)
         if: runner.os == 'Windows'
         run: |
