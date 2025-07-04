@@ -25,13 +25,25 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install dependencies (Linux)
+      # ---- LINUX DEPENDENCIES ----
+      - name: Install build tools (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build qtbase5-dev qtdeclarative5-dev qttools5-dev qttools5-dev-tools libqt5svg5-dev qtbase5-private-dev zlib1g-dev cmake
+          sudo apt-get install -y ninja-build cmake zlib1g-dev
+          # Optionally, you may add other Linux dependencies here
 
-      - name: Install dependencies (Windows)
+      # ---- QT INSTALLATION (LINUX) ----
+      - name: Install Qt (Linux)
+        if: runner.os == 'Linux'
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '5.15.2'
+          # You can specify modules if needed, e.g.:
+          # modules: 'qtbase qttools'
+
+      # ---- WINDOWS DEPENDENCIES ----
+      - name: Install build tools (Windows)
         if: runner.os == 'Windows'
         run: |
           choco install ninja -y
@@ -43,13 +55,15 @@ jobs:
           echo "C:\Program Files\CMake\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           echo "C:\ProgramData\chocolatey\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
+      # ---- QT INSTALLATION (WINDOWS) ----
       - name: Install Qt (Windows)
         if: runner.os == 'Windows'
         uses: jurplel/install-qt-action@v3
         with:
           version: '5.15.2'
-          modules: 'qtbase qttools' # Remove qtdeclarative if unavailable; add it back if it's required and supported
+          # Remove modules line to avoid aqt issues. Add modules only if verified available.
 
+      # ---- BUILD & TEST ----
       - name: Configure CMake
         run: cmake -S . -B build -G Ninja
 
