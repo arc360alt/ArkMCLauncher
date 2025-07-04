@@ -26,12 +26,15 @@ jobs:
           python-version: '3.x'
 
       # ---- LINUX DEPENDENCIES ----
-      - name: Install build tools (Linux)
+      - name: Update and install build tools (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build cmake zlib1g-dev
-          # Optionally, you may add other Linux dependencies here
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends ninja-build cmake zlib1g-dev curl
+          # Ensure latest versions
+          sudo apt-get upgrade -y
+          which cmake || sudo apt-get install -y cmake
+          which ninja || sudo apt-get install -y ninja-build
 
       # ---- QT INSTALLATION (LINUX) ----
       - name: Install Qt (Linux)
@@ -39,19 +42,42 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: '5.15.2'
-          # You can specify modules if needed, e.g.:
-          # modules: 'qtbase qttools'
 
       # ---- WINDOWS DEPENDENCIES ----
-      - name: Install build tools (Windows)
+      - name: Upgrade Chocolatey (Windows)
         if: runner.os == 'Windows'
+        run: choco upgrade chocolatey -y --debug
+
+      - name: Install build tools (Windows) with retries
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          choco install ninja -y
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+          $ErrorActionPreference = "Stop"
+          $success = $false
+          for ($i = 0; $i -lt 3; $i++) {
+            try {
+              choco install ninja -y --debug --pre
+              choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y --debug --pre
+              $success = $true
+              break
+            } catch {
+              Write-Host "Retrying Chocolatey install..."
+              Start-Sleep -Seconds 10
+            }
+          }
+          if (-not $success) {
+            Write-Host "Falling back to manual installation..."
+            # Fallback install for Ninja
+            Invoke-WebRequest -Uri "https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-win.zip" -OutFile "ninja.zip"
+            Expand-Archive ninja.zip -DestinationPath "C:\ProgramData\chocolatey\bin"
+            # Fallback install for CMake
+            Invoke-WebRequest -Uri "https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-windows-x86_64.msi" -OutFile "cmake-installer.msi"
+            Start-Process msiexec.exe -ArgumentList '/i cmake-installer.msi /qn /norestart ADD_CMAKE_TO_PATH=System' -NoNewWindow -Wait
+          }
 
       - name: Install ZLIB (Windows)
         if: runner.os == 'Windows'
-        run: choco install zlib -y
+        run: choco install zlib -y --debug --pre
 
       - name: Add CMake and Ninja to PATH (Windows)
         if: runner.os == 'Windows'
@@ -65,7 +91,6 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: '5.15.2'
-          # Remove modules line to avoid aqt issues. Add modules only if verified available.
 
       # ---- BUILD & TEST ----
       - name: Configure CMake
