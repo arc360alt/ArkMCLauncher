@@ -56,12 +56,25 @@ set(CMAKE_C_STANDARD_REQUIRED true)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 11)
 include(GenerateExportHeader)
-set(CMAKE_CXX_FLAGS " -Wall -pedantic -Wno-deprecated-declarations -D_GLIBCXX_USE_CXX11_ABI=0 -fstack-protector-strong --param=ssp-buffer-size=4 ${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE " -O3 -D_FORTIFY_SOURCE=2 ${CMAKE_CXX_FLAGS_RELEASE}")
-if(UNIX AND APPLE)
-    set(CMAKE_CXX_FLAGS " -stdlib=libc++ ${CMAKE_CXX_FLAGS}")
+
+# Set compiler-specific flags
+if(MSVC)
+    # MSVC compiler flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4996")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi")
+    # Disable specific warnings
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+else()
+    # GCC/Clang compiler flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wno-deprecated-declarations -D_GLIBCXX_USE_CXX11_ABI=0 -fstack-protector-strong --param=ssp-buffer-size=4")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -D_FORTIFY_SOURCE=2")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Werror -Werror=return-type -O0")
+    
+    if(UNIX AND APPLE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    endif()
 endif()
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Werror -Werror=return-type -O0")
 
 # Fix build with Qt 5.13
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_DEPRECATED_WARNINGS=Y")
