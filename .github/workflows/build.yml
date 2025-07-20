@@ -26,6 +26,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake zlib1g-dev
+      # Windows dependencies
+      - name: Install ZLIB (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          vcpkg install zlib:x64-windows
       # Install CMake (Windows)
       - name: Setup CMake (Windows)
         if: runner.os == 'Windows'
@@ -39,7 +44,7 @@ jobs:
           version: '5.15.2'
       # Build & test
       - name: Configure CMake
-        run: cmake -S . -B build -G Ninja
+        run: cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE="${{ runner.os == 'Windows' && 'C:/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}"
       - name: Build
         run: cmake --build build --config Release --parallel
       - name: Run Tests
