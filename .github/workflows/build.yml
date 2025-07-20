@@ -50,10 +50,12 @@ jobs:
       # Build & test
       - name: Configure CMake (Windows)
         if: runner.os == 'Windows'
-        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        env:
+          CMAKE_WARN_DEPRECATED: "OFF"
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DCMAKE_DISABLE_FIND_PACKAGE_Qt5LinguistTools=TRUE -Wno-dev -DCMAKE_CXX_FLAGS="/wd4996"
       - name: Configure CMake (Linux)
         if: runner.os == 'Linux'
-        run: cmake -S . -B build -G Ninja
+        run: cmake -S . -B build -G Ninja -Wno-dev
       - name: Build
         run: cmake --build build --config Release --parallel
       - name: Run Tests
