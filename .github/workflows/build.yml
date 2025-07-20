@@ -1,65 +1,49 @@
 name: Build Application
-
 on:
   push:
     branches: [ '*' ]
   pull_request:
     branches: [ '*' ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
         with:
           submodules: recursive
-
       - name: Set up Python (for CMake Qt tools)
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-
       # Linux dependencies
       - name: Install build tools (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build cmake zlib1g-dev
-
-      # Install Ninja (Windows)
-      - name: Setup Ninja (Windows)
-        if: runner.os == 'Windows'
-        uses: ashutoshvarma/setup-ninja@v1
-
+          sudo apt-get install -y cmake zlib1g-dev
       # Install CMake (Windows)
       - name: Setup CMake (Windows)
         if: runner.os == 'Windows'
         uses: jwlawson/actions-setup-cmake@v2
         with:
           cmake-version: '3.29.x'
-
       # Qt installation
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: '5.15.2'
-
       # Build & test
       - name: Configure CMake
         run: cmake -S . -B build -G Ninja
-
       - name: Build
         run: cmake --build build --config Release --parallel
-
       - name: Run Tests
         run: ctest --test-dir build --output-on-failure
-
       - name: Archive artifacts
         if: success()
         uses: actions/upload-artifact@v4
