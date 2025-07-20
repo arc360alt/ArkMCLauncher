@@ -125,6 +125,9 @@ find_package(Qt5Network REQUIRED)
 find_package(Qt5Test REQUIRED)
 find_package(Qt5Xml REQUIRED)
 
+# Find zlib (required for quazip)
+find_package(ZLIB REQUIRED)
+
 # The Qt5 cmake files don't provide its install paths, so ask qmake.
 include(QMakeQuery)
 query_qmake(QT_INSTALL_PLUGINS QT_PLUGINS_DIR)
@@ -260,6 +263,7 @@ set_directory_properties(PROPERTIES EP_BASE External)
 option(NBT_BUILD_SHARED "Build NBT shared library" ON)
 option(NBT_USE_ZLIB "Build NBT library with zlib support" OFF)
 option(NBT_BUILD_TESTS "Build NBT library tests" OFF) #FIXME: fix unit tests.
+option(QUAZIP_ENABLE_TESTS "Build QuaZIP tests" OFF) # Disable QuaZIP tests by default
 set(NBT_NAME Launcher_nbt++)
 set(NBT_DEST_DIR ${LIBRARY_DEST_DIR})
 add_subdirectory(libraries/libnbtplusplus)
