@@ -22,18 +22,15 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          # Removed g++-5 and gcc-5 as they are not available on Ubuntu 22.04.
-          # The runner will use its default GCC/G++ version (e.g., GCC 11/12).
-          # qt5svg-dev should be available on ubuntu-latest's default repositories.
-          sudo apt install libgl1-mesa-dev qttools5-dev qt5svg-dev
+          # Added qtbase5-dev and ensured qt5svg-dev is explicitly listed.
+          # We're relying on ubuntu-latest's default repos and its default GCC/G++.
+          sudo apt install libgl1-mesa-dev qtbase5-dev qttools5-dev qt5svg-dev
       - name: Build
         run: |
           export JAVA_HOME=$JAVA_HOME_8_X64
           mkdir build
           cd build
           cmake \
-           # Removed explicit C/CXX compiler paths. CMake will find the default GCC/G++
-           # which is provided by the ubuntu-latest environment.
            -DCMAKE_BUILD_TYPE=Release \
            -DLauncher_NOTIFICATION_URL:STRING=https://files.multimc.org/notifications.json \
            -DCMAKE_INSTALL_PREFIX:PATH=/home/runner/ArkMCLauncher/ArkMCLauncher \
