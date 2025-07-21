@@ -12,7 +12,7 @@ on:
 jobs:
   build-linux:
     name: build-linux
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # This is Ubuntu 22.04 (Jammy Jellyfish)
 
     steps:
       - uses: actions/checkout@main
@@ -21,18 +21,19 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          # Removed specific 'bionic' repositories as ubuntu-latest (22.04)
-          # should have the necessary packages by default.
           sudo apt update
-          sudo apt install libgl1-mesa-dev qttools5-dev qt5svg-dev g++-5 gcc-5
+          # Removed g++-5 and gcc-5 as they are not available on Ubuntu 22.04.
+          # The runner will use its default GCC/G++ version (e.g., GCC 11/12).
+          # qt5svg-dev should be available on ubuntu-latest's default repositories.
+          sudo apt install libgl1-mesa-dev qttools5-dev qt5svg-dev
       - name: Build
         run: |
           export JAVA_HOME=$JAVA_HOME_8_X64
           mkdir build
           cd build
           cmake \
-           -DCMAKE_C_COMPILER=/usr/bin/gcc-5 \
-           -DCMAKE_CXX_COMPILER=/usr/bin/g++-5 \
+           # Removed explicit C/CXX compiler paths. CMake will find the default GCC/G++
+           # which is provided by the ubuntu-latest environment.
            -DCMAKE_BUILD_TYPE=Release \
            -DLauncher_NOTIFICATION_URL:STRING=https://files.multimc.org/notifications.json \
            -DCMAKE_INSTALL_PREFIX:PATH=/home/runner/ArkMCLauncher/ArkMCLauncher \
@@ -145,7 +146,6 @@ jobs:
           set PATH=%PATHCM%;%PATH%
           mkdir build
           cd build
-          # Corrected line continuation from '\' to '^' and source directory '..'
           cmake ^
            -DCMAKE_C_COMPILER=gcc ^
            -DCMAKE_CXX_COMPILER=g++ ^
