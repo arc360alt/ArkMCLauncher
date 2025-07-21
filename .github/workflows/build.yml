@@ -59,9 +59,9 @@ jobs:
         run: |
           cd build
           make install
-          # Fix permissions for the actual installed files
-          chmod +x /home/runner/ArkMCLauncher/ArkMCLauncher/MultiMC
-          chmod +x /home/runner/ArkMCLauncher/ArkMCLauncher/bin/MultiMC
+          # Fix permissions for the actual installed files (using correct ArkLauncher name)
+          chmod +x /home/runner/ArkMCLauncher/ArkMCLauncher/ArkLauncher
+          chmod +x /home/runner/ArkMCLauncher/ArkMCLauncher/bin/ArkLauncher
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
@@ -275,9 +275,8 @@ jobs:
         run: |
           cd build
           make install
-          # Adjusted chmod to match expected MultiMC.app name from macdeployqt for now.
-          # For full branding, review CMakeLists.txt to ensure MACOSX_BUNDLE_BUNDLE_NAME is ArkMCLauncher.
-          chmod +x "/Users/runner/work/ArkMCLauncher/build/dist/MultiMC.app/Contents/MacOS/MultiMC"
+          # Fix permissions for the actual installed files (using correct ArkLauncher name)
+          chmod +x "/Users/runner/work/ArkMCLauncher/build/dist/ArkLauncher.app/Contents/MacOS/ArkLauncher"
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
