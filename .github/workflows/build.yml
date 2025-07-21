@@ -59,8 +59,9 @@ jobs:
         run: |
           cd build
           make install
-          chmod +x /home/runner/ArkMCLauncher/ArkMCLauncher/ArkMCLauncher
-          chmod +x /home/runner/ArkMCLauncher/ArkMCLauncher/bin/ArkMCLauncher
+          # Fix permissions for the actual installed files
+          chmod +x /home/runner/ArkMCLauncher/ArkMCLauncher/MultiMC
+          chmod +x /home/runner/ArkMCLauncher/ArkMCLauncher/bin/MultiMC
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
